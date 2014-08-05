@@ -6,21 +6,22 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class TagCacheRemover
 {
-    private $entityManager;
+    private $container;
     private $entityClasses = [];
 
     public function __construct(ContainerInterface $container)
     {
-        $this->entityManager = $container->get('doctrine.orm.entity_manager');
+        $this->container = $container;
     }
 
     public function onFlush(OnFlushEventArgs $eventArgs)
     {
-        $resultCache = $this->entityManager->getConfiguration()->getResultCacheImpl();
+        $em = $this->container->get('doctrine.orm.entity_manager');
+        $resultCache = $em->getConfiguration()->getResultCacheImpl();
         if (!method_exists($resultCache, 'tagClear'))
             return;
 
-        $uow = $this->entityManager->getUnitOfWork();
+        $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {
             $this->registerSheduledEntityClass($entity);
@@ -52,8 +53,9 @@ class TagCacheRemover
         if (!$entity) {
             return;
         }
+        $em = $this->container->get('doctrine.orm.entity_manager');
 
-        $classMetadata = $this->entityManager->getClassMetadata(get_class($entity));
+        $classMetadata = $em->getClassMetadata(get_class($entity));
         if ($classMetadata) {
             $refClass = $classMetadata->getName();
 
