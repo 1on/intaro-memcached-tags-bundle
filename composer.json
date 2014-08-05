@@ -25,7 +25,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Intaro\\MemcacheTagsBundle\\": ""
+            "Intaro\\MemcachedTagsBundle\\": ""
         }
     },
     "extra": {
@@ -33,5 +33,5 @@
             "dev-master": "0.1.1-dev"
         }
     },
-    "target-dir" : "Intaro/MemcacheTagsBundle"
+    "target-dir" : "Intaro/MemcachedTagsBundle"
 }
