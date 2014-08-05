@@ -1,10 +1,10 @@
 parameters:
     doctrine.orm.entity_manager.class: "Intaro\MemcachedTagsBundle\Doctrine\ORM\EntityManager"
 
- services:
+services:
     memcached_tag.cache_remover:
         class: Intaro\MemcachedTagsBundle\Doctrine\Cache\EventListener\TagCacheRemover
         arguments:
             - "@doctrine.orm.entity_manager"
         tags:
-          - { name: doctrine.event_listener, event: onFlush }
+            - { name: doctrine.event_listener, event: onFlush }
