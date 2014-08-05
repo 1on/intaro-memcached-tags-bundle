@@ -1,0 +1,37 @@
+{
+    "name": "intaro/memcached-tags-bundle",
+    "description": "Native query builder for doctrine",
+    "keywords": ["symfony2", "doctrine", "memcached", "tags"],
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name" : "Ilyas Salikhov"
+        },
+        {
+            "name": "Chernyavtsev Ivan",
+            "email": "chernyavtsev@intaro.ru",
+            "role": "Developer"
+        },
+        {
+            "name": "Kruglov Kirill",
+            "email": "kruglov@intaro.ru",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : ">=5.3.0",
+        "leaseweb/memcached-bundle": "*",
+    },
+    "autoload": {
+        "psr-0": {
+            "Intaro\\MemcacheTagsBundle\\": ""
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.1-dev"
+        }
+    },
+    "target-dir" : "Intaro/MemcacheTagsBundle"
+}
