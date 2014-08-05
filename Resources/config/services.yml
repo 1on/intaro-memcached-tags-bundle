@@ -5,6 +5,6 @@ services:
     memcached_tag.cache_remover:
         class: Intaro\MemcachedTagsBundle\Doctrine\Cache\EventListener\TagCacheRemover
         arguments:
-            - "@doctrine.orm.entity_manager"
+            - "@service_container"
         tags:
             - { name: doctrine.event_listener, event: onFlush }

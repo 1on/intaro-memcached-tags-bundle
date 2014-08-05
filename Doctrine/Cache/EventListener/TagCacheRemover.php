@@ -2,16 +2,16 @@
 namespace Intaro\MemcachedTagsBundle\Doctrine\Cache\EventListener;
 
 use Doctrine\ORM\Event\OnFlushEventArgs;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class TagCacheRemover
 {
     private $entityManager;
     private $entityClasses = [];
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(ContainerInterface $container)
     {
-        $this->entityManager = $entityManager;
+        $this->entityManager = $container->get('doctrine.orm.entity_manager');
     }
 
     public function onFlush(OnFlushEventArgs $eventArgs)
