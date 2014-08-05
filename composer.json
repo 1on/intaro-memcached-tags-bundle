@@ -21,7 +21,7 @@
     ],
     "require": {
         "php" : ">=5.3.0",
-        "leaseweb/memcached-bundle": "*",
+        "leaseweb/memcached-bundle": "*"
     },
     "autoload": {
         "psr-0": {
