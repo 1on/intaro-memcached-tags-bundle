@@ -1,5 +1,5 @@
 <?php
-namespace Intaro\MemcachedTagsBundle\Builder;
+namespace Intaro\MemcachedTagsBundle\Doctrine\ORM;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\ORMException;
