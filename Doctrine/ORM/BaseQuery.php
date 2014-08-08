@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\DBAL\LockMode;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;

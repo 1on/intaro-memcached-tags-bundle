@@ -19,6 +19,9 @@
 
 namespace Intaro\MemcachedTagsBundle\Doctrine\ORM;
 
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Query;
+
 /**
  * Represents a native SQL query.
  *
