@@ -2,6 +2,7 @@
 
 namespace Intaro\MemcachedTagsBundle\Doctrine\ORM;
 
+use Doctrine\ORM\Query as BaseQuery;
 use Intaro\MemcachedTagsBundle\Doctrine\ORM\Traits\CacheTags;
 use Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcacheCache;
 
