@@ -68,6 +68,6 @@ class QueryBuilder extends BaseQueryBuilder
 
         }
 
-        return $q;
+        return $qquery;
     }
 }
