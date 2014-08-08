@@ -2,8 +2,6 @@
 
 namespace Intaro\MemcachedTagsBundle\Doctrine\ORM;
 
-use Doctrine\ORM\NativeQuery as BaseNativeQuery;
-
 use Intaro\MemcachedTagsBundle\Doctrine\ORM\Traits\CacheTags;
 use Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcacheCache;
 

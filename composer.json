@@ -23,12 +23,6 @@
         "php" : ">=5.3.0",
         "leaseweb/memcache-bundle": "*"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/intarocrm/doctrine2"
-        }
-    ],
     "autoload": {
         "psr-0": {
             "Intaro\\MemcachedTagsBundle\\": ""
@@ -36,7 +30,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.1.1-dev"
+            "dev-master": "2.4.4-dev"
         }
     },
     "target-dir" : "Intaro/MemcachedTagsBundle"
