@@ -1,6 +1,5 @@
 parameters:
-    doctrine.orm.entity_manager.class: "Intaro\MemcachedTagsBundle\Doctrine\ORM\EntityManager"
-    memcache.doctrine_cache.class: "Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcachedCache"
+    doctrine.orm.entity_manager.class: Intaro\MemcachedTagsBundle\Doctrine\ORM\EntityManager
 
 services:
     memcached_tag.cache_remover:
@@ -9,10 +8,3 @@ services:
             - "@service_container"
         tags:
             - { name: doctrine.event_listener, event: onFlush }
-
-    doctrine:
-        dbal:
-            default_connection: default
-            connections:
-                default:
-                    wrapper_class: 'Intaro\MemcachedTagsBundle\Doctrine\Connection'

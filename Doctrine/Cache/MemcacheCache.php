@@ -1,12 +1,20 @@
 <?php
 namespace Intaro\MemcachedTagsBundle\Doctrine\Cache;
 
-use Lsw\MemcacheBundle\Doctrine\Cache\MemcachedCache as BaseMemcacheCache;
+use Lsw\MemcacheBundle\Doctrine\Cache\MemcachedCache;
 
-class MemcacheCache extends BaseMemcacheCache
+class MemcacheTagsManager
 {
-    private $tag = array();
+    protected $resultCache;
+    protected $memcached;
+
     private $tagPrefix = 'tags_caсhe';
+
+    public function __construct(MemcachedCache $resultCache)
+    {
+        $this->resultCache = $resultCache;
+        $this->memcached = $this->resultCache->getMemcached();
+    }
 
     /**
      * Добавляет тег(-и) для сохраняемых данных
@@ -35,7 +43,7 @@ class MemcacheCache extends BaseMemcacheCache
                 }
             }
 
-            $tagIds[] = $this->prefix . $queryId;
+            $tagIds[] = $queryId;
             $this->memcached->set($this->getTagCacheKey($tag), serialize($tagIds), 0);
         }
 
@@ -65,7 +73,7 @@ class MemcacheCache extends BaseMemcacheCache
 
             $tagIds = unserialize($tagIds);
             foreach ($tagIds as $id) {
-                $this->memcached->delete($id);
+                $this->resultCache->delete($id);
             }
         }
 
@@ -75,6 +83,6 @@ class MemcacheCache extends BaseMemcacheCache
 
     private function getTagCacheKey($tag)
     {
-        return $this->prefix . $this->tagPrefix . '.' . $tag;
+        return $this->tagPrefix . '.' . $tag;
     }
 }

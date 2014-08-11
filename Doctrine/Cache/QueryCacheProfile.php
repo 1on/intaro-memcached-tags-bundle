@@ -1,8 +1,9 @@
 <?php
 
-namespace Intaro\MemcachedTagsBundle\Doctrine\Cache;
+namespace Lsw\MemcacheBundle\Doctrine\Cache;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile as BaseQueryCacheProfile;
+use Doctrine\Common\Cache\Cache;
 
 /**
  * {@inheritDoc}
@@ -10,6 +11,13 @@ use Doctrine\DBAL\Cache\QueryCacheProfile as BaseQueryCacheProfile;
 class QueryCacheProfile extends BaseQueryCacheProfile
 {
     protected $cacheTags = array();
+
+    public function __construct($lifetime = 0, $cacheKey = null, Cache $resultCache = null, array $cacheTags = array())
+    {
+        parent::__construct($lifetime, $cacheKey, $resultCache);
+
+        $this->cacheTags = $cacheTags;
+    }
 
     /**
      * @return array
@@ -33,5 +41,41 @@ class QueryCacheProfile extends BaseQueryCacheProfile
         }
 
         return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setResultCacheDriver(Cache $cache)
+    {
+        $cacheKeys = null;
+        try {
+            $cacheKeys = $this->getCacheKey();
+        } catch (\Doctrine\DBAL\Cache\CacheException $e) {
+        }
+
+        return new QueryCacheProfile($this->getLifetime(), $cacheKeys, $cache, $this->cacheTags);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setCacheKey($cacheKey)
+    {
+        return new QueryCacheProfile($this->getLifetime(), $cacheKey, $this->getResultCacheDriver(), $this->cacheTags);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setLifetime($lifetime)
+    {
+        $cacheKeys = null;
+        try {
+            $cacheKeys = $this->getCacheKey();
+        } catch (\Doctrine\DBAL\Cache\CacheException $e) {
+        }
+
+        return new QueryCacheProfile($lifetime, $cacheKeys, $this->getResultCacheDriver(), $this->cacheTags);
     }
 }

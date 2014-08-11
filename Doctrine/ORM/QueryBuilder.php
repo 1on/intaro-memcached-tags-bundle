@@ -30,6 +30,7 @@ class QueryBuilder extends BaseQueryBuilder
 
             if (!empty($this->cacheTags)) {
                 $resultCacheProfile->setCacheTags($this->cacheTags);
+                $query->setResultCacheProfile($resultCacheProfile);
             }
         }
 

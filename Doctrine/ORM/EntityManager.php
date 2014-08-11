@@ -5,6 +5,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Configuration;
 use Doctrine\Common\EventManager;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\EntityManager as DoctrineEntityManager;
 use Intaro\MemcachedTagsBundle\Doctrine\Cache\QueryCacheProfile;
@@ -69,7 +70,8 @@ class EntityManager extends DoctrineEntityManager
             }
 
             if (!empty($cacheTags)) {
-                $resultCacheProfile->setCacheTags($cacheTags);
+                $resultCacheProfile = $resultCacheProfile->setCacheTags($cacheTags);
+                $query->setResultCacheProfile($resultCacheProfile);
             }
 
         }

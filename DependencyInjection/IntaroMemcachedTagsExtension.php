@@ -32,6 +32,13 @@ class IntaroMemcachedTagsExtension extends Extension implements PrependExtension
                         'default_repository_class' => 'Intaro\MemcachedTagsBundle\Doctrine\ORM\EntityRepository',
                     )
                 )
+            ),
+            'dbal' => array(
+                'connections' => array(
+                    'default' => array(
+                        'wrapper_class' => 'Intaro\MemcachedTagsBundle\Doctrine\Connection',
+                    )
+                )
             )
         );
 

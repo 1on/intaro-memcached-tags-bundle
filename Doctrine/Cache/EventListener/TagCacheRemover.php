@@ -3,6 +3,8 @@ namespace Intaro\MemcachedTagsBundle\Doctrine\Cache\EventListener;
 
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Lsw\MemcacheBundle\Doctrine\Cache\MemcachedCache;
+use Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcacheTagsManager;
 
 class TagCacheRemover
 {
@@ -18,7 +20,7 @@ class TagCacheRemover
     {
         $em = $this->container->get('doctrine.orm.entity_manager');
         $resultCache = $em->getConfiguration()->getResultCacheImpl();
-        if (!method_exists($resultCache, 'tagClear'))
+        if (!($resultCache instanceof MemcachedCache))
             return;
 
         $uow = $em->getUnitOfWork();
@@ -43,7 +45,8 @@ class TagCacheRemover
 
         //clear cache by tags
         if (sizeof($this->entityClasses)) {
-            $resultCache->tagClear($this->entityClasses);
+            $cacheTagsManager = new MemcacheTagsManager($resultCache);
+            $cacheTagsManager->tagClear($this->entityClasses);
             $this->entityClasses = [];
         }
     }
