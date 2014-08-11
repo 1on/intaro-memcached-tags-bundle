@@ -1,6 +1,6 @@
 <?php
 
-namespace Lsw\MemcacheBundle\Doctrine\Cache;
+namespace Intaro\MemcachedTagsBundle\Doctrine\Cache;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile as BaseQueryCacheProfile;
 use Doctrine\Common\Cache\Cache;

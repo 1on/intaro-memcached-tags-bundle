@@ -42,6 +42,6 @@ class IntaroMemcachedTagsExtension extends Extension implements PrependExtension
             )
         );
 
-        $container->prependExtensionConfig('doctrine.orm', $config);
+        $container->prependExtensionConfig('doctrine', $config);
     }
 }

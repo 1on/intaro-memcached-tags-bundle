@@ -12,8 +12,6 @@ use Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcacheTagsManager;
  */
 class Connection extends BaseConnection
 {
-    private $cacheTagManager = null;
-
     /**
      * {@inheritDoc}
      */
@@ -30,7 +28,7 @@ class Connection extends BaseConnection
             list($cacheKey, $realKey) = $qcp->generateCacheKeys($query, $params, $types);
 
             $cacheTagsManager = new MemcacheTagsManager($resultCacheDriver);
-            $this->cacheTagManager->tagAdd($qcp->getCacheTags(), $cacheKey);
+            $cacheTagsManager->tagAdd($qcp->getCacheTags(), $cacheKey);
         }
 
         return $result;
