@@ -7,6 +7,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\EntityManager as DoctrineEntityManager;
+use Intaro\MemcachedTagsBundle\Doctrine\Cache\QueryCacheProfile;
 
 class EntityManager extends DoctrineEntityManager
 {
@@ -22,11 +23,27 @@ class EntityManager extends DoctrineEntityManager
     /**
      * {@inheritDoc}
      */
-    public function createQuery($dql = "")
+    public function createQuery($dql = "", $cacheLifeTime = null, array $cacheTags = array())
     {
         $query = new Query($this);
 
-        if (!empty($dql)) {
+        $resultCacheProfile = new QueryCacheProfile();
+        $query->setResultCacheProfile($resultCacheProfile);
+
+        if (!empty($cacheTags) || !is_null($cacheLifeTime)) {
+
+            $query->useResultCache(true);
+            if (!is_null($cacheLifeTime)) {
+                $query->setResultCacheLifetime($cacheLifeTime);
+            }
+
+            if (!empty($cacheTags)) {
+                $resultCacheProfile->setCacheTags($cacheTags);
+            }
+
+        }
+
+        if ( ! empty($dql)) {
             $query->setDql($dql);
         }
 
@@ -37,9 +54,25 @@ class EntityManager extends DoctrineEntityManager
     /**
      * {@inheritDoc}
      */
-    public function createNativeQuery($sql, ResultSetMapping $rsm)
+    public function createNativeQuery($sql, ResultSetMapping $rsm, $cacheLifeTime = null, array $cacheTags = array())
     {
         $query = new NativeQuery($this);
+
+        $resultCacheProfile = new QueryCacheProfile();
+        $query->setResultCacheProfile($resultCacheProfile);
+
+        if (!empty($cacheTags) || !is_null($cacheLifeTime)) {
+
+            $query->useResultCache(true);
+            if (!is_null($cacheLifeTime)) {
+                $query->setResultCacheLifetime($cacheLifeTime);
+            }
+
+            if (!empty($cacheTags)) {
+                $resultCacheProfile->setCacheTags($cacheTags);
+            }
+
+        }
 
         $query->setSql($sql);
         $query->setResultSetMapping($rsm);

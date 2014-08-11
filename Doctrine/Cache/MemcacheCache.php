@@ -6,8 +6,7 @@ use Lsw\MemcacheBundle\Doctrine\Cache\MemcachedCache as BaseMemcacheCache;
 class MemcacheCache extends BaseMemcacheCache
 {
     private $tag = array();
-    private $tagPrefix = 'tags_cahce';
-
+    private $tagPrefix = 'tags_caсhe';
 
     /**
      * Добавляет тег(-и) для сохраняемых данных

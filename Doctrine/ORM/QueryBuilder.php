@@ -2,72 +2,108 @@
 namespace Intaro\MemcachedTagsBundle\Doctrine\ORM;
 
 use Doctrine\ORM\QueryBuilder as BaseQueryBuilder;
+use Intaro\MemcachedTagsBundle\Doctrine\Cache\QueryCacheProfile;
 
+/**
+ * {@inheritDoc}
+ */
 class QueryBuilder extends BaseQueryBuilder
 {
-    protected $cacheParams = array();
+    protected $cacheTags = array();
+    protected $cacheLifeTime = null;
 
-    public function setCacheParams(array $params)
+    /**
+     * {@inheritDoc}
+     */
+    public function getQuery()
     {
-        if (!isset($params['lifetime']) || !is_numeric($params['lifetime']))
-            $params['lifetime'] = null;
+        $query = parent::getQuery();
 
-        $this->cacheParams['lifetime'] = $params['lifetime'];
+        if (!empty($this->cacheTags) || !is_null($this->cacheLifeTime)) {
 
-        if (isset($params['tags']) && sizeof($params['tags']))
-            $this->cacheParams['tags'] = $params['tags'];
+            $resultCacheProfile = new QueryCacheProfile();
+            $query->setResultCacheProfile($resultCacheProfile);
+            $query->useResultCache(true);
+            if (!is_null($this->cacheLifeTime)) {
+                $query->setResultCacheLifetime($this->cacheLifeTime);
+            }
 
-        return $this;
+            if (!empty($this->cacheTags)) {
+                $resultCacheProfile->setCacheTags($this->cacheTags);
+            }
+        }
+
+        return $query;
     }
 
-    public function getCacheParams()
+    public function useResultCache($bool, $lifeTime = 0)
     {
-        return $this->cacheParams;
-    }
-
-    public function addCacheTag($tag)
-    {
-        if (!isset($this->cacheParams['tags']))
-            $this->cacheParams['tags'] = [];
-
-        if (!in_array($tag, $this->cacheParams['tags']))
-            $this->cacheParams['tags'][] = $tag;
-
-        return $this;
-    }
-
-    public function addCacheTags($tags)
-    {
-        foreach ($tags as $tag) {
-            $this->addCacheTag($tag);
+        if ($bool) {
+            $this->cacheLifeTime = $lifeTime;
+        } else {
+            $this->cacheLifeTime = null;
         }
 
         return $this;
     }
 
     /**
-     * Возвращает объект Query с подставленными параметрами кеширования
-     *
-     * @access public
-     * @return Query
+     * @return array
      */
-    public function getQuery()
+    public function getCacheTags()
     {
-        $query = parent::getQuery();
+        return $this->cacheTags;
+    }
 
-        if (sizeof($this->cacheParams)) {
+    /**
+     * @param array $tags
+     *
+     * @return self
+     */
+    public function setCacheTags(array $tags)
+    {
+        $this->cacheTags = $tags;
 
-            $query->useCache(true);
-            if (isset($this->cacheParams['lifetime'])) {
-                $query->setResultCacheLifetime($this->cacheParams['lifetime']);
-            }
+        return $this;
+    }
 
-            if (isset($this->cacheParams['tags']) && sizeof($this->cacheParams['tags'])) {
-                $query->addCacheTags($this->cacheParams['tags']);
-            }
-
+    /**
+     * @param string $tag
+     *
+     * @return self
+     */
+    public function addCacheTag($tag)
+    {
+        if (!in_array($tag, $this->cacheTags)) {
+            $this->cacheTags[] = $tag;
         }
 
-        return $query;
+        return $this;
+    }
+
+    /**
+     * @return self
+     */
+    public function clearCacheTags()
+    {
+        $this->cacheTags = array();
+
+        return $this;
+    }
+
+    /**
+     * @param string $tags
+     *
+     * @return self
+     */
+    public function removeCacheTag($tag)
+    {
+        $position = array_search($tag, $this->cacheTags);
+
+        if ($position !== false) {
+            array_splice($this->cacheTags, $position, 1);
+        }
+
+        return $this;
     }
 }
