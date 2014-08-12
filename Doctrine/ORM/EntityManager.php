@@ -8,10 +8,26 @@ use Doctrine\Common\EventManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\EntityManager as DoctrineEntityManager;
+
+use Lsw\MemcacheBundle\Doctrine\Cache\MemcachedCache;
 use Intaro\MemcachedTagsBundle\Doctrine\Cache\QueryCacheProfile;
+use Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcacheTagsManager;
 
 class EntityManager extends DoctrineEntityManager
 {
+    private $memcachedTagsManager;
+
+    protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
+    {
+        parent::__construct($conn, $config, $eventManager);
+
+        $resultCache = $this->getConfiguration()->getResultCacheImpl();
+        if (!($resultCache instanceof MemcachedCache)) {
+            return;
+        }
+        $this->memcachedTagsManager = new MemcacheTagsManager($resultCache);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -19,7 +35,6 @@ class EntityManager extends DoctrineEntityManager
     {
         return new QueryBuilder($this);
     }
-
 
     /**
      * {@inheritDoc}
@@ -51,7 +66,6 @@ class EntityManager extends DoctrineEntityManager
         return $query;
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -82,6 +96,21 @@ class EntityManager extends DoctrineEntityManager
         return $query;
     }
 
+    /**
+     * Clears cache for tags
+     *
+     * @param string|array $tags single tag or array of tags
+     *
+     * @return bool
+     */
+    public function tagClear($tags)
+    {
+        if (is_null($this->memcachedTagsManager)) {
+            return false;
+        }
+
+        return $this->memcachedTagsManager->tagClear($tags);
+    }
 
     /**
      * {@inheritDoc}
