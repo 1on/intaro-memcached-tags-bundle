@@ -27,11 +27,17 @@ class TagCacheRemover
         }
 
         foreach ($uow->getScheduledEntityUpdates() as $entity) {
-            $this->registerSheduledEntityClass($entity);
+            $className = $this->registerSheduledEntityClass($entity);
+            if (is_callable([$entity, 'getId'])) {
+                $em->tagClear($className . ':' . $entity->getId());
+            }
         }
 
         foreach ($uow->getScheduledEntityDeletions() as $entity) {
-            $this->registerSheduledEntityClass($entity);
+            $className = $this->registerSheduledEntityClass($entity);
+            if (is_callable([$entity, 'getId'])) {
+                $em->tagClear($className . ':' . $entity->getId());
+            }
         }
 
         // из документации, но не смог выяснить, в каких ситуациях они есть
@@ -61,5 +67,7 @@ class TagCacheRemover
                 $this->entityClasses[] = $refClass;
             }
         }
+
+        return $refClass;
     }
 }

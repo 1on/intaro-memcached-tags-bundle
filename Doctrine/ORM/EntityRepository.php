@@ -17,4 +17,20 @@ class EntityRepository extends BaseEntityRepository
 
         return $this->_em->tagClear($this->_class->getName());
     }
+
+
+    /**
+     * Clear tagged cache for entity id
+     *
+     * @param integer $id
+     *
+     * @return null
+     */
+    public function clearEntityIdCache($id)
+    {
+        if (!($this->_em instanceof EntityManager))
+            return;
+
+        return $this->_em->tagClear($this->_class->getName() . ':' . $id);
+    }
 }
