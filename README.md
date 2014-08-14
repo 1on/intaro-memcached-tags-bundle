@@ -42,7 +42,7 @@ Create new Query with necessary cache life time and cache tags:
 ```php
     $em = $container->get('doctrine')->getManager();
     $em->createQuery('SELECT book FROM AcmeHelloBundle:Book book', 3600, [
-        Acme\HelloBundle\Entity\Book
+        'Acme\HelloBundle\Entity\Book'
     ]);
 ```
 
@@ -53,7 +53,7 @@ NativeQuery with cache tags works same as Query.
 ```php
     $em = $container->get('doctrine')->getManager();
     $em->createNativeQuery('SELECT * FROM book', $rsm, 3600, [
-        Acme\HelloBundle\Entity\Book
+        'Acme\HelloBundle\Entity\Book'
     ]);
 ```
 
@@ -64,9 +64,9 @@ NativeQuery with cache tags works same as Query.
     $builder = $em->createQueryBuilder()
         ->select('book')->from('AcmeHelloBundle:Book', 'book')
         ->useResultCache(true, 3600) //enable result cache and set cache life time
-        ->setCacheTags([Acme\HelloBundle\Entity\Book])
+        ->setCacheTags(['Acme\HelloBundle\Entity\Book'])
         ->join('book.author', 'author')
-        ->addCacheTag(Acme\HelloBundle\Entity\Author);
+        ->addCacheTag('Acme\HelloBundle\Entity\Author');
 
     if ($disableTags) {
         $builder->clearCacheTags();
