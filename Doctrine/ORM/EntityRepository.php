@@ -16,9 +16,9 @@ class EntityRepository extends BaseEntityRepository
             return;
 
         if (!is_null($id)) {
-            return $this->_em->tagsClear($this->_class->getName() . ':' . $id);
+            return $this->_em->tagsClear($this->_class->getName() . ':' . $id, true);
         }
 
-        return $this->_em->tagsClear($this->_class->getName());
+        return $this->_em->tagsClear($this->_class->getName(), true);
     }
 }

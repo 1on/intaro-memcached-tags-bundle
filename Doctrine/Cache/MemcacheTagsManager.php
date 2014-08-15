@@ -79,7 +79,7 @@ class MemcacheTagsManager
 
         $tagsTime = array();
         foreach ($tags as $tag) {
-            if ($force || isset($existingTags[$this->getTagCacheKey($tag)])) {
+            if ($force || isset($existingTags[$tag])) {
                 $tagsTime[$tag] = time();
             }
         }
@@ -129,6 +129,13 @@ class MemcacheTagsManager
 
             if (isset($tagsRetrieved[$this->getTagCacheKey($this->coreTagsKey)])) {
                 self::$loadedTags['core'] = $tagsRetrieved[$this->getTagCacheKey($this->coreTagsKey)];
+
+                foreach ($tags as $tag) {
+                    if (isset(self::$loadedTags['core'][$tag])) {
+                        $result[$tag] = self::$loadedTags['core'][$tag];
+                    }
+                }
+
                 unset($tagsRetrieved[$this->getTagCacheKey($this->coreTagsKey)]);
             }
 

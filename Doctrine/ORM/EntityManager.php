@@ -103,13 +103,13 @@ class EntityManager extends DoctrineEntityManager
      *
      * @return bool
      */
-    public function tagsClear($tags)
+    public function tagsClear($tags, $force = false)
     {
         if (is_null($this->memcachedTagsManager)) {
             return false;
         }
 
-        return $this->memcachedTagsManager->tagsClear($tags, false);
+        return $this->memcachedTagsManager->tagsClear($tags, $force);
     }
 
     /**

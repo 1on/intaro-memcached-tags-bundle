@@ -45,6 +45,9 @@ class Connection extends BaseConnection
                     if (!$isDeprecated) {
                         $stmt = new ArrayStatement($data[$realKey]);
                     }
+
+                } else {
+                    $stmt = new ArrayStatement($data[$realKey]);
                 }
 
             } else if (array_key_exists($realKey, $data)) {
