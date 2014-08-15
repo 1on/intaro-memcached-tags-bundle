@@ -6,7 +6,7 @@ use Lsw\MemcacheBundle\Doctrine\Cache\MemcachedCache;
 class MemcacheTagsManager
 {
     protected static $loadedTags = array();
-    protected static $generalTagsLoaded = false;
+    protected static $isCoreTagsLoaded = false;
 
     protected $resultCache;
     protected $memcached;
@@ -14,7 +14,7 @@ class MemcacheTagsManager
     const CACHE_TAG_KEY = 'cache_tags';
     const CACHE_TIME_KEY = 'cache_time';
 
-    private $generalTagsKey = 'general_tags';
+    private $coreTagsKey = 'core_tags';
     private $tagPrefix = 'tags_caсhe';
 
     public function __construct(MemcachedCache $resultCache)
@@ -39,7 +39,7 @@ class MemcacheTagsManager
 
         $tagsTimes = $this->loadTags($tags);
 
-        $tagsDifference = array_diff(array_keys($tagsTimes), $tags);
+        $tagsDifference = array_diff($tags, array_keys($tagsTimes));
         if (!empty($tagsDifference)) {
 
             $tagsDifferenceTime = array();
@@ -50,8 +50,9 @@ class MemcacheTagsManager
         }
 
         foreach ($tagsTimes as $value) {
-            if ($cacheTime < $value)
+            if ($cacheTime < $value) {
                 return true;
+            }
         }
 
         return false;
@@ -69,13 +70,12 @@ class MemcacheTagsManager
         if (!is_array($tags)) {
             $tags = array($tags);
         }
+
         foreach ($tags as $key => $tag) {
             $tags[$key] = $this->getTagCacheKey($tag);
         }
 
-        if (!$force) {
-            $existingTags = $this->loadTags($tags);
-        }
+        $existingTags = $this->loadTags($tags);
 
         $tagsTime = array();
         foreach ($tags as $tag) {
@@ -104,6 +104,9 @@ class MemcacheTagsManager
             if (isset(self::$loadedTags[$tag])) {
                 $result[$tag] = self::$loadedTags[$tag];
                 unset($tags[$key]);
+            } elseif (isset(self::$loadedTags['core'][$tag])) {
+                $result[$tag] = self::$loadedTags['core'][$tag];
+                unset($tags[$key]);
             }
         }
 
@@ -117,27 +120,22 @@ class MemcacheTagsManager
                 }
             }
 
-            if (!empty($tags) && !self::$generalTagsLoaded) {
-                $tagsToRetrieve[] = $this->getTagCacheKey($this->generalTagsKey);
-                self::$generalTagsLoaded = true;
+            if (!empty($tags) && !self::$isCoreTagsLoaded) {
+                $tagsToRetrieve[] = $this->getTagCacheKey($this->coreTagsKey);
+                self::$isCoreTagsLoaded = true;
             }
 
-            $gettedTags = $this->memcached->getMulti($tagsToRetrieve);
-            $tagsRetrieved = array();
+            $tagsRetrieved = $this->memcached->getMulti($tagsToRetrieve);
 
-            if (isset($gettedTags[$this->getTagCacheKey($this->generalTagsKey)])) {
-                $tagsRetrieved = $gettedTags[$this->getTagCacheKey($this->generalTagsKey)];
-                unset($gettedTags[$this->getTagCacheKey($this->generalTagsKey)]);
-            }
-
-            foreach ($gettedTags as $tag => $value) {
-                $tagsRetrieved[$tag] = $value;
+            if (isset($tagsRetrieved[$this->getTagCacheKey($this->coreTagsKey)])) {
+                self::$loadedTags['core'] = $tagsRetrieved[$this->getTagCacheKey($this->coreTagsKey)];
+                unset($tagsRetrieved[$this->getTagCacheKey($this->coreTagsKey)]);
             }
 
             foreach ($tagsRetrieved as $tag => $value) {
                 self::$loadedTags[$tag] = $value;
+                $result[$tag] = $value;
             }
-            $result = array_merge($result, $tagsRetrieved);
         }
 
         return $result;
@@ -154,14 +152,20 @@ class MemcacheTagsManager
     {
         $dataToSave = array();
         foreach ($tags as $tag => $value) {
-            self::$loadedTags[$tag] = $value;
 
             if (preg_match('/:\d+$/', $tag) === 1) {
                 $dataToSave[$tag] = $value;
+                self::$loadedTags[$tag] = $value;
                 unset($tags[$tag]);
+            } else {
+                self::$loadedTags['core'][$tag] = $value;
             }
         }
-        $dataToSave[$this->getTagCacheKey($this->generalTagsKey)] = $tags;
+
+        if (!empty($tags)) {
+            $dataToSave[$this->getTagCacheKey($this->coreTagsKey)] = self::$loadedTags['core'];
+        }
+
         $this->memcached->setMulti($dataToSave);
 
         return true;
