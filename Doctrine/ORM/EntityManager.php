@@ -109,7 +109,7 @@ class EntityManager extends DoctrineEntityManager
             return false;
         }
 
-        return $this->memcachedTagsManager->tagsClear($tags);
+        return $this->memcachedTagsManager->tagsClear($tags, false);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Intaro\MemcachedTagsBundle\Doctrine;
 
 use Doctrine\DBAL\Connection as BaseConnection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\DBAL\Cache\ArrayStatement;
 
 use Lsw\MemcacheBundle\Doctrine\Cache\MemcachedCache;
 use Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcacheTagsManager;
