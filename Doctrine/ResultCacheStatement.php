@@ -26,7 +26,7 @@ class ResultCacheStatement extends BaseResultCacheStatement
     public function __construct(Statement $stmt, Cache $resultCache, $cacheKey, $realKey, $lifetime, array $cacheTags = array())
     {
         parent::__construct($stmt, $resultCache, $cacheKey, $realKey, $lifetime);
-        $this->cacheTags = $cacheTags
+        $this->cacheTags = $cacheTags;
     }
 
     /**
