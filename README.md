@@ -84,7 +84,7 @@ NativeQuery with cache tags works same as Query.
     $em->tagsClear('Acme\HelloBundle\Entity\Book');
 
     $book = $em->getRepository('AcmeHelloBundle:Book')->find($id);
-    $em->getRepository('AcmeHelloBundle:Book')->clearEntityIdCache($book->getId());
+    $em->getRepository('AcmeHelloBundle:Book')->clearEntityCache($book->getId());
     // or
     $em->tagsClear('Acme\HelloBundle\Entity\Book:' . $book->getId());
 ```
