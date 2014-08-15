@@ -17,7 +17,7 @@ class TagCacheRemover
     public function onFlush(OnFlushEventArgs $eventArgs)
     {
         $em = $this->container->get('doctrine.orm.entity_manager');
-        if (!is_callable([$em, 'tagClear']))
+        if (!is_callable([$em, 'tagsClear']))
             return;
 
         $uow = $em->getUnitOfWork();
@@ -28,16 +28,10 @@ class TagCacheRemover
 
         foreach ($uow->getScheduledEntityUpdates() as $entity) {
             $className = $this->registerSheduledEntityClass($entity);
-            if (is_callable([$entity, 'getId'])) {
-                $em->tagClear($className . ':' . $entity->getId());
-            }
         }
 
         foreach ($uow->getScheduledEntityDeletions() as $entity) {
             $className = $this->registerSheduledEntityClass($entity);
-            if (is_callable([$entity, 'getId'])) {
-                $em->tagClear($className . ':' . $entity->getId());
-            }
         }
 
         // из документации, но не смог выяснить, в каких ситуациях они есть
@@ -47,7 +41,14 @@ class TagCacheRemover
         //}
 
         if (sizeof($this->entityClasses)) {
-            $em->tagClear($this->entityClasses);
+            $tags = array();
+            foreach ($this->entityClasses as $className => $entityClasses) {
+                $tags[] = $className;
+                foreach ($entityClasses as $id) {
+                    $tags[] = $className . ':' . $id;
+                }
+            }
+            $em->tagsClear($tags);
             $this->entityClasses = [];
         }
     }
@@ -63,8 +64,15 @@ class TagCacheRemover
         if ($classMetadata) {
             $refClass = $classMetadata->getName();
 
-            if (!in_array($refClass, $this->entityClasses)) {
-                $this->entityClasses[] = $refClass;
+            if (!isset($this->entityClasses[$refClass])) {
+                $this->entityClasses[$refClass] = array();
+            }
+
+            if (
+                is_callable([$entity, 'getId'])
+                && !isset($this->entityClasses[$refClass][$entity->getId()])
+            ) {
+                $this->entityClasses[$refClass][] = $entity->getId();
             }
         }
 

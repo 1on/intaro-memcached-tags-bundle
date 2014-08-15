@@ -15,7 +15,7 @@ class EntityRepository extends BaseEntityRepository
         if (!($this->_em instanceof EntityManager))
             return;
 
-        return $this->_em->tagClear($this->_class->getName());
+        return $this->_em->tagsClear($this->_class->getName());
     }
 
 
@@ -31,6 +31,6 @@ class EntityRepository extends BaseEntityRepository
         if (!($this->_em instanceof EntityManager))
             return;
 
-        return $this->_em->tagClear($this->_class->getName() . ':' . $id);
+        return $this->_em->tagsClear($this->_class->getName() . ':' . $id);
     }
 }

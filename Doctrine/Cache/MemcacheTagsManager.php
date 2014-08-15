@@ -8,6 +8,9 @@ class MemcacheTagsManager
     protected $resultCache;
     protected $memcached;
 
+    const CACHE_TAG_KEY = 'cache_tags';
+    const CACHE_TIME_KEY = 'cache_time';
+
     private $tagPrefix = 'tags_caсhe';
 
     public function __construct(MemcachedCache $resultCache)
@@ -16,40 +19,31 @@ class MemcacheTagsManager
         $this->memcached = $this->resultCache->getMemcached();
     }
 
-    /**
-     * Добавляет тег(-и) для сохраняемых данных
-     *
-     * @access public
-     * @param mixed $tag
-     * @param string $queryId
-     * @return void
-     */
-    public function tagAdd($tags, $queryId = '')
+    public function checkExpiredByTags(array $tags, $cacheTime)
     {
-        if (!is_array($tags)) {
-            $tags = array($tags);
+        foreach ($tags as $key => $tag) {
+            $tags[$key] = $this->getTagCacheKey($tag);
         }
 
-        foreach ($tags as $tag) {
+        $tagsTimes = $this->memcached->getMulti($tags);
 
-            $tagIds = $this->memcached->get($this->getTagCacheKey($tag));
+        $tagsDifference = array_diff(array_keys($tagsTimes), $tags);
+        if (!empty($tagsDifference)) {
 
-            if (!$tagIds) {
-                $tagIds = [];
-            } else {
-                $tagIds = unserialize($tagIds);
-                if (in_array($queryId, $tagIds)) {
-                    continue;
-                }
+            $tagsDifferenceTime = arrray();
+            foreach ($tagsDifference as $tag) {
+                $tagsDifferenceTime[$tag] = $cacheTime;
             }
-
-            $tagIds[] = $queryId;
-            $this->memcached->set($this->getTagCacheKey($tag), serialize($tagIds), 0);
+            $this->memcached->setMulti($tagsDifferenceTime);
         }
 
-        return $this;
-    }
+        foreach ($tagsTimes as $value) {
+            if ($cacheTime < $value)
+                return true;
+        }
 
+        return false;
+    }
 
     /**
      * Очистка данных по тегу
@@ -58,24 +52,22 @@ class MemcacheTagsManager
      * @param mixed $tag
      * @return void
      */
-    public function tagClear($tags)
+    public function tagsClear($tags)
     {
         if (!is_array($tags)) {
             $tags = array($tags);
         }
 
-        foreach ($tags as $tag){
+        $existingTags = $this->memcached->getMulti($tags);
 
-            $tagIds = $this->memcached->get($this->getTagCacheKey($tag));
-            if (!$tagIds) {
-                continue;
-            }
-
-            $tagIds = unserialize($tagIds);
-            foreach ($tagIds as $id) {
-                $this->resultCache->delete($id);
+        $tagsTime = array();
+        foreach ($tags as $tag) {
+            if (isset($existingTags[$this->getTagCacheKey($tag)])) {
+                $tagsTime[$this->getTagCacheKey($tag)] = time();
             }
         }
+
+        $this->memcached->setMulti($tagsTime);
 
         return true;
     }
@@ -86,3 +78,4 @@ class MemcacheTagsManager
         return $this->tagPrefix . '.' . $tag;
     }
 }
+

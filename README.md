@@ -81,12 +81,12 @@ NativeQuery with cache tags works same as Query.
     $em = $container->get('doctrine')->getManager();
     $em->getRepository('AcmeHelloBundle:Book')->clearEntityCache();
     // or
-    $em->tagClear('Acme\HelloBundle\Entity\Book');
+    $em->tagsClear('Acme\HelloBundle\Entity\Book');
 
     $book = $em->getRepository('AcmeHelloBundle:Book')->find($id);
     $em->getRepository('AcmeHelloBundle:Book')->clearEntityIdCache($book->getId());
     // or
-    $em->tagClear('Acme\HelloBundle\Entity\Book:' . $book->getId());
+    $em->tagsClear('Acme\HelloBundle\Entity\Book:' . $book->getId());
 ```
 
 On entity insertions, update and deletes automatically clears cache for changed class names and changed entity id.
