@@ -35,14 +35,14 @@ class Connection extends BaseConnection
 
                     $cacheTagsManager = new MemcacheTagsManager($resultCache);
 
-                    $isExpired = $cacheTagsManager->checkExpiredByTags(
+                    $isDeprecated = $cacheTagsManager->checkDeprecatedByTags(
                         $data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY],
                         $data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]
                     );
                     unset($data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY]);
                     unset($data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]);
 
-                    if (!$isExpired) {
+                    if (!$isDeprecated) {
                         $stmt = new ArrayStatement($data[$realKey]);
                     }
                 }
