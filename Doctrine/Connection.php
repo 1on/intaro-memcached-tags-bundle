@@ -31,16 +31,22 @@ class Connection extends BaseConnection
             // is the real key part of this row pointers map or is the cache only pointing to other cache keys?
             if (isset($data[$realKey])) {
 
-                if (isset($data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY])) {
+                if (!empty($cacheTags)) {
 
-                    $cacheTagsManager = new MemcacheTagsManager($resultCache);
+                    if (!isset($data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY])) {
+                        $isDeprecated = true;
+                    } else {
 
-                    $isDeprecated = $cacheTagsManager->checkDeprecatedByTags(
-                        $data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY],
-                        $data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]
-                    );
-                    unset($data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY]);
-                    unset($data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]);
+                        $cacheTagsManager = new MemcacheTagsManager($resultCache);
+
+                        $isDeprecated = $cacheTagsManager->checkDeprecatedByTags(
+                            $data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY],
+                            $data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]
+                        );
+                        unset($data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY]);
+                        unset($data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]);
+
+                    }
 
                     if (!$isDeprecated) {
                         $stmt = new ArrayStatement($data[$realKey]);
