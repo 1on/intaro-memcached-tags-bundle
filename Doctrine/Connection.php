@@ -53,6 +53,9 @@ class Connection extends BaseConnection
                     }
 
                 } else {
+
+                    unset($data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY]);
+                    unset($data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]);
                     $stmt = new ArrayStatement($data[$realKey]);
                 }
 
