@@ -110,7 +110,7 @@ On entity insertions, update and deletes automatically clears cache for changed 
     /**
      * @ORM\Entity
      * @ORM\Table(name="shelf")
-     * @AssociationCache(lifetime=100, tags={"asdf", "qwer"})
+     * @AssociationCache(lifetime=100)
      */
     class Shelf
     {
