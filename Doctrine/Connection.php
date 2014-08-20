@@ -26,6 +26,11 @@ class Connection extends BaseConnection
 
         list($cacheKey, $realKey) = $qcp->generateCacheKeys($query, $params, $types);
 
+        $cacheTags = array();
+        if (is_callable([$qcp, 'getCacheTags']) && !empty($qcp->getCacheTags())) {
+            $cacheTags = $qcp->getCacheTags();
+        }
+
         // fetch the row pointers entry
         if ($data = $resultCache->fetch($cacheKey)) {
             // is the real key part of this row pointers map or is the cache only pointing to other cache keys?
@@ -53,6 +58,9 @@ class Connection extends BaseConnection
                     }
 
                 } else {
+
+                    unset($data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY]);
+                    unset($data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]);
                     $stmt = new ArrayStatement($data[$realKey]);
                 }
 
@@ -62,12 +70,6 @@ class Connection extends BaseConnection
         }
 
         if (!isset($stmt)) {
-
-            $cacheTags = array();
-            if (is_callable([$qcp, 'getCacheTags']) && !empty($qcp->getCacheTags())) {
-                $cacheTags = $qcp->getCacheTags();
-            }
-
             $stmt = new ResultCacheStatement($this->executeQuery($query, $params, $types), $resultCache, $cacheKey, $realKey, $qcp->getLifetime(), $cacheTags);
         }
 

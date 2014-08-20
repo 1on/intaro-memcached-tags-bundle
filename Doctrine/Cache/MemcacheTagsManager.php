@@ -114,7 +114,7 @@ class MemcacheTagsManager
 
             $tagsToRetrieve = array();
             foreach ($tags as $key => $tag) {
-                if (preg_match('/:\d+$/', $tag) === 1) {
+                if (preg_match('/\[\w+="\w+"\]/', $tag) === 1) {
                     $tagsToRetrieve[] = $tag;
                     unset($tags[$key]);
                 }
@@ -160,7 +160,7 @@ class MemcacheTagsManager
         $dataToSave = array();
         foreach ($tags as $tag => $value) {
 
-            if (preg_match('/:\d+$/', $tag) === 1) {
+            if (preg_match('/\[\w+="\w+"\]$/', $tag) === 1) {
                 $dataToSave[$tag] = $value;
                 self::$loadedTags[$tag] = $value;
                 unset($tags[$tag]);

@@ -45,7 +45,7 @@ class TagCacheRemover
             foreach ($this->entityClasses as $className => $entityClasses) {
                 $tags[] = $className;
                 foreach ($entityClasses as $id) {
-                    $tags[] = $className . ':' . $id;
+                    $tags[] = sprintf('%s[id="%s"]', $className , $id);
                 }
             }
             $em->tagsClear($tags);

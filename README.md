@@ -75,6 +75,7 @@ NativeQuery with cache tags works same as Query.
     $builder->getQuery()->getResult();
 ```
 
+
 ### Clear cache ###
 
 ```php
@@ -86,7 +87,7 @@ NativeQuery with cache tags works same as Query.
     $book = $em->getRepository('AcmeHelloBundle:Book')->find($id);
     $em->getRepository('AcmeHelloBundle:Book')->clearEntityCache($book->getId());
     // or
-    $em->tagsClear('Acme\HelloBundle\Entity\Book:' . $book->getId());
+    $em->tagsClear('Acme\HelloBundle\Entity\Book[id="' . $book->getId() . '"]');
 ```
 
 On entity insertions, update and deletes automatically clears cache for changed class names and changed entity id.
@@ -97,5 +98,40 @@ On entity insertions, update and deletes automatically clears cache for changed 
     $book->setName('New book');
     $em->merge($book);
     $em->flush();
-    // Tags Acme\HelloBundle\Entity\Book and Acme\HelloBundle\Entity\Book:25 are cleared
+    // Tags Acme\HelloBundle\Entity\Book and Acme\HelloBundle\Entity\Book[id="25"] are cleared
+```
+
+
+### ManyToOne association cache ###
+
+```php
+    use Intaro\MemcachedTagsBundle\Doctrine\Annotation\AssociationCache;
+
+    /**
+     * @ORM\Entity
+     * @ORM\Table(name="shelf")
+     * @AssociationCache(lifetime=100, tags={"asdf", "qwer"})
+     */
+    class Shelf
+    {
+        ...
+    }
+
+    /**
+     * @ORM\Entity
+     * @ORM\Table(name="shelf")
+     * @AssociationCache(lifetime=100, tags={"Acme\HelloBundle\Entity\Author", "Acme\HelloBundle\Entity\Book"})
+     */
+    class Author
+    {
+        ...
+    }
+
+```
+
+```php
+    $em = $container->get('doctrine')->getManager();
+    $book = $em->getRepository('AcmeHelloBundle:Book')->find(25);
+    $shelf = $book->getShelf();
+    // Cache with tag Acme\HelloBundle\Entity\Shelf[id="13"] will be loaded
 ```
