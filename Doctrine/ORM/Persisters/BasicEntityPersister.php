@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Persisters\BasicEntityPersister as BaseBasicEntityPersister;
 
 use Intaro\MemcachedTagsBundle\Doctrine\Cache\QueryCacheProfile;
+use Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcacheTagsManager;
 
 /**
  * {@inheritDoc}
@@ -47,7 +48,7 @@ class BasicEntityPersister extends BaseBasicEntityPersister
 
             foreach ($tags as $key => $tag) {
                 foreach ($criteria as $field => $value) {
-                    $tags[$key] = $tag . sprintf('[%s="%s"]', $field, $value);
+                    $tags[$key] = MemcacheTagsManager::formatTag($tag, [$field => $value]);
                 }
             }
 

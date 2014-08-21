@@ -2,6 +2,7 @@
 namespace Intaro\MemcachedTagsBundle\Doctrine\ORM;
 
 use Doctrine\ORM\EntityRepository as BaseEntityRepository;
+use Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcacheTagsManager;
 
 class EntityRepository extends BaseEntityRepository
 {
@@ -10,13 +11,16 @@ class EntityRepository extends BaseEntityRepository
      *
      * @return null
      */
-    public function clearEntityCache($id = null)
+    public function clearEntityCache($value = null, $field = 'id')
     {
         if (!($this->_em instanceof EntityManager))
             return;
 
-        if (!is_null($id)) {
-            return $this->_em->tagsClear($this->_class->getName() . ':' . $id, true);
+        if (!is_null($value)) {
+            return $this->_em->tagsClear(
+                MemcacheTagsManager::formatTag($this->_class->getName(), [$field => $value]),
+                true
+            );
         }
 
         return $this->_em->tagsClear($this->_class->getName(), true);

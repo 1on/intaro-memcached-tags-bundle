@@ -3,6 +3,7 @@ namespace Intaro\MemcachedTagsBundle\Doctrine\Cache\EventListener;
 
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcacheTagsManager;
 
 class TagCacheRemover
 {
@@ -45,7 +46,7 @@ class TagCacheRemover
             foreach ($this->entityClasses as $className => $entityClasses) {
                 $tags[] = $className;
                 foreach ($entityClasses as $id) {
-                    $tags[] = sprintf('%s[id="%s"]', $className , $id);
+                    $tags[] = MemcacheTagsManager::formatTag($className, ['id' => $id]);
                 }
             }
             $em->tagsClear($tags, true);

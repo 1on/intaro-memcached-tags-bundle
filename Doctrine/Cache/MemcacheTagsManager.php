@@ -23,6 +23,21 @@ class MemcacheTagsManager
         $this->memcached = $this->resultCache->getMemcached();
     }
 
+    public static function formatTag($entity, array $fields = array())
+    {
+        if (is_object($entity)) {
+            $result = get_class($entity);
+        } else {
+            $result = $entity;
+        }
+
+        foreach ($fields as $key => $value) {
+            $result .= sprintf('[%s=%s]', $key, $value)   ;
+        }
+
+        return $result;
+    }
+
     /**
      * Check by tags if cache is deprecated
      *
@@ -114,7 +129,7 @@ class MemcacheTagsManager
 
             $tagsToRetrieve = array();
             foreach ($tags as $key => $tag) {
-                if (preg_match('/\[\w+="\w+"\]/', $tag) === 1) {
+                if (preg_match('/\[\w+=\w+\]/', $tag) === 1) {
                     $tagsToRetrieve[] = $tag;
                     unset($tags[$key]);
                 }
@@ -160,7 +175,7 @@ class MemcacheTagsManager
         $dataToSave = array();
         foreach ($tags as $tag => $value) {
 
-            if (preg_match('/\[\w+="\w+"\]$/', $tag) === 1) {
+            if (preg_match('/\[\w+=\w+\]$/', $tag) === 1) {
                 $dataToSave[$tag] = $value;
                 self::$loadedTags[$tag] = $value;
                 unset($tags[$tag]);
