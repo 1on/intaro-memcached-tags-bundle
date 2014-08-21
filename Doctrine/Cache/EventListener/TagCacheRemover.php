@@ -48,7 +48,7 @@ class TagCacheRemover
                     $tags[] = sprintf('%s[id="%s"]', $className , $id);
                 }
             }
-            $em->tagsClear($tags);
+            $em->tagsClear($tags, true);
             $this->entityClasses = [];
         }
     }
