@@ -38,19 +38,16 @@ class Connection extends BaseConnection
 
                 if (!empty($cacheTags)) {
 
-                    if (!isset($data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY])) {
+                    if (!isset($data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY])) {
                         $isDeprecated = true;
                     } else {
-
                         $cacheTagsManager = new MemcacheTagsManager($resultCache);
 
                         $isDeprecated = $cacheTagsManager->checkDeprecatedByTags(
-                            $data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY],
+                            $cacheTags,
                             $data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]
                         );
-                        unset($data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY]);
                         unset($data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]);
-
                     }
 
                     if (!$isDeprecated) {
@@ -58,8 +55,6 @@ class Connection extends BaseConnection
                     }
 
                 } else {
-
-                    unset($data[$realKey][MemcacheTagsManager::CACHE_TAG_KEY]);
                     unset($data[$realKey][MemcacheTagsManager::CACHE_TIME_KEY]);
                     $stmt = new ArrayStatement($data[$realKey]);
                 }
@@ -70,7 +65,7 @@ class Connection extends BaseConnection
         }
 
         if (!isset($stmt)) {
-            $stmt = new ResultCacheStatement($this->executeQuery($query, $params, $types), $resultCache, $cacheKey, $realKey, $qcp->getLifetime(), $cacheTags);
+            $stmt = new ResultCacheStatement($this->executeQuery($query, $params, $types), $resultCache, $cacheKey, $realKey, $qcp->getLifetime());
         }
 
         $stmt->setFetchMode($this->defaultFetchMode);

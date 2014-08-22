@@ -96,7 +96,6 @@ class ResultCacheStatement implements \IteratorAggregate, ResultStatement
     public function closeCursor()
     {
         if ($this->emptied && $this->data !== null && !empty($this->cacheTags)) {
-            $this->data[MemcacheTagsManager::CACHE_TAG_KEY] = $this->cacheTags;
             $this->data[MemcacheTagsManager::CACHE_TIME_KEY] = time();
         }
 

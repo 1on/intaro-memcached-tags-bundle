@@ -172,6 +172,10 @@ class MemcacheTagsManager
      */
     protected function saveTags(array $tags)
     {
+        if (empty($tags)){
+            return true;
+        }
+
         $dataToSave = array();
         foreach ($tags as $tag => $value) {
 
