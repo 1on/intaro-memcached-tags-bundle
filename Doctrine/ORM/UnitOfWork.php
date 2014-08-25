@@ -20,6 +20,7 @@
 namespace Intaro\MemcachedTagsBundle\Doctrine\ORM;
 
 use Doctrine\ORM\UnitOfWork as BaseUnitOfWork;
+use Doctrine\ORM\EntityManager as DoctrineEntityManager;
 
 /**
  * {@inheritDoc}
@@ -44,7 +45,7 @@ class UnitOfWork extends BaseUnitOfWork
     /**
      * {@inheritDoc}
      */
-    public function __construct(EntityManager $em)
+    public function __construct(DoctrineEntityManager $em)
     {
         parent::__construct($em);
         $this->em = $em;

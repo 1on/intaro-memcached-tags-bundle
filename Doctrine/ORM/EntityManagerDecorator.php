@@ -1,4 +1,5 @@
 <?php
+/* Not used */
 namespace Intaro\MemcachedTagsBundle\Doctrine\ORM;
 
 use Doctrine\DBAL\Connection;
@@ -7,33 +8,34 @@ use Doctrine\ORM\Configuration;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\UnitOfWork as BaseUnitOfWork;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Decorator\EntityManagerDecorator as BaseEntityManagerDecorator;
 use Doctrine\ORM\EntityManager as DoctrineEntityManager;
 
 use Lsw\MemcacheBundle\Doctrine\Cache\MemcachedCache;
 use Intaro\MemcachedTagsBundle\Doctrine\Cache\QueryCacheProfile;
 use Intaro\MemcachedTagsBundle\Doctrine\Cache\MemcacheTagsManager;
 
-class EntityManager extends DoctrineEntityManager
+class EntityManagerDecorator extends BaseEntityManagerDecorator
 {
     private $memcachedTagsManager;
-    private $unitOfWork = null;
 
     public function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
-
-        $unitOfWorkSetter = function(BaseUnitOfWork $uow) {
-            $this->unitOfWork = $uow;
-        };
-        $setter = \Closure::bind($unitOfWorkSetter, $this, 'Doctrine\ORM\EntityManager');
-
-        parent::__construct($conn, $config, $eventManager);
+        $entityManager = DoctrineEntityManager::create($conn, $config, $conn->getEventManager());
+        parent::__construct($entityManager);
 
         $resultCache = $this->getConfiguration()->getResultCacheImpl();
         if (!($resultCache instanceof MemcachedCache)) {
             return;
         }
         $this->memcachedTagsManager = new MemcacheTagsManager($resultCache);
-        $setter($this->getUnitOfWork());
+
+        $unitOfWorkSetter = function(BaseUnitOfWork $uow) {
+            $this->unitOfWork = $uow;
+        };
+
+        $setter = \Closure::bind($unitOfWorkSetter, $this->wrapped, 'Doctrine\ORM\EntityManager');
+        $setter(new UnitOfWork($this->wrapped));
     }
 
     /**
@@ -97,18 +99,6 @@ class EntityManager extends DoctrineEntityManager
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function getUnitOfWork()
-    {
-        if (is_null($this->unitOfWork)) {
-            $this->unitOfWork = new UnitOfWork($this);
-        }
-
-        return $this->unitOfWork;
-    }
-
-    /**
      * Clears cache for tags
      *
      * @param string|array $tags single tag or array of tags
@@ -126,27 +116,6 @@ class EntityManager extends DoctrineEntityManager
 
     public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
-        if ( ! $config->getMetadataDriverImpl()) {
-            throw ORMException::missingMappingDriverImpl();
-        }
-
-        switch (true) {
-            case (is_array($conn)):
-                $conn = \Doctrine\DBAL\DriverManager::getConnection(
-                    $conn, $config, ($eventManager ?: new EventManager())
-                );
-                break;
-
-            case ($conn instanceof Connection):
-                if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                     throw ORMException::mismatchedEventManager();
-                }
-                break;
-
-            default:
-                throw new \InvalidArgumentException("Invalid argument: " . $conn);
-        }
-
         return new EntityManager($conn, $config, $conn->getEventManager());
     }
 }

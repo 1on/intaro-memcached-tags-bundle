@@ -172,7 +172,7 @@ class MemcacheTagsManager
      */
     protected function saveTags(array $tags)
     {
-        if (empty($tags)){
+        if (empty($tags)) {
             return true;
         }
 
