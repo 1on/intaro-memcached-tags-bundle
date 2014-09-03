@@ -48,7 +48,7 @@ class BasicEntityPersister extends BaseBasicEntityPersister
 
             foreach ($tags as $key => $tag) {
                 foreach ($criteria as $field => $value) {
-                    $tags[$key] = MemcacheTagsManager::formatTag($tag, [$field => $value]);
+                    $tags[$key] = MemcacheTagsManager::formatTag($tag, array($field => $value));
                 }
             }
 

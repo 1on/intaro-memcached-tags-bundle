@@ -46,7 +46,7 @@ class TagCacheRemover
             foreach ($this->entityClasses as $className => $entityClasses) {
                 $tags[] = $className;
                 foreach ($entityClasses as $id) {
-                    $tags[] = MemcacheTagsManager::formatTag($className, ['id' => $id]);
+                    $tags[] = MemcacheTagsManager::formatTag($className, array('id' => $id));
                 }
             }
             $em->tagsClear($tags, true);

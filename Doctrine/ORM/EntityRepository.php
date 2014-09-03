@@ -18,7 +18,7 @@ class EntityRepository extends BaseEntityRepository
 
         if (!is_null($value)) {
             return $this->_em->tagsClear(
-                MemcacheTagsManager::formatTag($this->_class->getName(), [$field => $value]),
+                MemcacheTagsManager::formatTag($this->_class->getName(), array($field => $value)),
                 true
             );
         }
