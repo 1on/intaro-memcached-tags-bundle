@@ -20,13 +20,13 @@ class EntityManager extends DoctrineEntityManager
 
     public function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
-
         $unitOfWorkSetter = function(BaseUnitOfWork $uow) {
             $this->unitOfWork = $uow;
         };
         $setter = \Closure::bind($unitOfWorkSetter, $this, 'Doctrine\ORM\EntityManager');
 
         parent::__construct($conn, $config, $eventManager);
+        $this->unitOfWork = parent::getUnitOfWork();
 
         $resultCache = $this->getConfiguration()->getResultCacheImpl();
         if (!($resultCache instanceof MemcachedCache)) {
