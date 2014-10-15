@@ -24,6 +24,10 @@ class Connection extends BaseConnection
             throw CacheException::noResultDriverConfigured();
         }
 
+        if (!($resultCache instanceof MemcachedCache)) {
+            return parent::executeCacheQuery($query, $params, $types, $qcp);
+        }
+
         list($cacheKey, $realKey) = $qcp->generateCacheKeys($query, $params, $types);
 
         $cacheTags = array();
