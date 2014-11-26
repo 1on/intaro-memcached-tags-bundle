@@ -66,8 +66,8 @@ class EntityManagerDecorator extends BaseEntityManagerDecorator
                 $resultCacheProfile = $resultCacheProfile->setCacheTags($cacheTags);
             }
 
+            $query->setResultCacheProfile($resultCacheProfile);
         }
-        $query->setResultCacheProfile($resultCacheProfile);
 
         return $query;
     }
@@ -92,8 +92,8 @@ class EntityManagerDecorator extends BaseEntityManagerDecorator
                 $resultCacheProfile = $resultCacheProfile->setCacheTags($cacheTags);
             }
 
+            $query->setResultCacheProfile($resultCacheProfile);
         }
-        $query->setResultCacheProfile($resultCacheProfile);
 
         return $query;
     }

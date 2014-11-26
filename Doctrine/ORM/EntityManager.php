@@ -64,8 +64,8 @@ class EntityManager extends DoctrineEntityManager
                 $resultCacheProfile = $resultCacheProfile->setCacheTags($cacheTags);
             }
 
+            $query->setResultCacheProfile($resultCacheProfile);
         }
-        $query->setResultCacheProfile($resultCacheProfile);
 
         return $query;
     }
@@ -90,8 +90,8 @@ class EntityManager extends DoctrineEntityManager
                 $resultCacheProfile = $resultCacheProfile->setCacheTags($cacheTags);
             }
 
+            $query->setResultCacheProfile($resultCacheProfile);
         }
-        $query->setResultCacheProfile($resultCacheProfile);
 
         return $query;
     }
