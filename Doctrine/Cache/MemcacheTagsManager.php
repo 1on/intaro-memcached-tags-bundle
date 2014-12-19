@@ -65,7 +65,7 @@ class MemcacheTagsManager
         }
 
         foreach ($tagsTimes as $value) {
-            if ($cacheTime < $value) {
+            if ($cacheTime <= $value) {
                 return true;
             }
         }
